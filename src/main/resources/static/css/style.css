@@ -1,9 +1,9 @@
 @charset "UTF-8";
 
-header {height:100px;}
+header {height:100px; background:#dcdcdc;}
 .header-box {height:100px;}
 .contents {min-height:500px;}
-footer {height:100px;}
+footer {height:100px; background:#dcdcdc;}
 .footer-box {height:100px;}
 
 .sign-up-box {width:550px;}
