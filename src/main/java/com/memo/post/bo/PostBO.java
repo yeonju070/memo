@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.memo.common.FileManagerService;
 import com.memo.post.dao.PostDAO;
+import com.memo.post.model.Post;
 
 @Service
 public class PostBO {
@@ -26,5 +27,9 @@ public class PostBO {
 		
 		// DB insert => dao
 		return postDAO.insertPost(userId, subject, content, imagePath);
+	}
+	
+	public Post getPost(int id) {
+		return postDAO.selectPost(id);
 	}
 }

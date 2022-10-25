@@ -15,10 +15,10 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
+					<td>${post.id}</td>
+					<td>${post.subject}</td>
+					<td>${post.createdAt}</td>
+					<td>${post.updatedAt}</td>
 				</tr>
 			</tbody>
 		</table>
