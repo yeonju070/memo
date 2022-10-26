@@ -1,5 +1,7 @@
 package com.memo.post.dao;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -14,5 +16,9 @@ public interface PostDAO {
 			@Param("content") String content,
 			@Param("imagePath") String imagePath);
 	
-	public Post selectPost(int id);
+	public List<Post> selectPostListByUserId(int userId);
+	
+	public Post selectPostByPostIdAndUserId(
+			@Param("postId") int postId,
+			@Param("userId") int userId);
 }

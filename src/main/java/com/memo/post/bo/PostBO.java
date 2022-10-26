@@ -1,5 +1,7 @@
 package com.memo.post.bo;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +31,12 @@ public class PostBO {
 		return postDAO.insertPost(userId, subject, content, imagePath);
 	}
 	
-	public Post getPost(int id) {
-		return postDAO.selectPost(id);
+	public List<Post> getPostListByUserId(int userId) {
+		return postDAO.selectPostListByUserId(userId);
+	}
+	
+	public Post getPostByPostIdAndUserId(int postId, int userId) {
+		return postDAO.selectPostByPostIdAndUserId(postId, userId);
+		
 	}
 }
