@@ -6,11 +6,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 @Component	// 일반적인 String bean
 public class FileManagerService {
+	private Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	// 마지막 / 를 쳐서 경로 추가
 	// 실제 이미지가 저장될 경로(서버)
@@ -42,5 +45,29 @@ public class FileManagerService {
 		// 성공했으면 이미지 url path를 리턴한다.(WebMvconfig에서 매핑한 이미지 path)
 		// http://localhost/images/yeonJu_19324356/sun.png
 		return "/images/" + directoryName + file.getOriginalFilename();
+	}
+	
+	public void deleteFile(String imagePath) {
+		// imagePath : /images/yeonJu_19324356/sun.png
+		
+		// /images/ => 이 구문을 제거
+		Path path = Paths.get(FILE_UPLOAD_PATH + imagePath.replace("/images/", ""));
+		if (Files.exists(path)) {
+			try {
+				Files.delete(path);	// 이미지 삭제
+			} catch (IOException e) {
+				log.error("[이미지 삭제] 이미지 삭제 실패 imagePath{}", imagePath);
+			}
+			
+			// 디렉토리(폴더) 삭제
+			path = path.getParent();
+			if (Files.exists(path)) {
+				try {
+					Files.delete(path);	// 디렉토리 삭제
+				} catch (IOException e) {
+					log.error("[이미지 삭제] 디렉토리 삭제 실패 imagePath{}", imagePath);
+				}
+			}
+		}
 	}
 }
