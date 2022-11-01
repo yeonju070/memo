@@ -7,6 +7,10 @@ public class Post {
 	private int id;
 	private int userId;
 	private String subject;
+	private String content;
+	private String imagePath;
+	private Date createdAt;
+	private Date updatedAt;
 
 	public String getSubject() {
 		return subject;
@@ -15,11 +19,6 @@ public class Post {
 	public void setSubject(String subject) {
 		this.subject = subject;
 	}
-
-	private String content;
-	private String imagePath;
-	private Date createdAt;
-	private Date updatedAt;
 
 	public int getId() {
 		return id;

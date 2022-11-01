@@ -23,11 +23,21 @@ public interface PostDAO {
 			@Param("content") String content,
 			@Param("imagePath") String imagePath);
 	
-	public List<Post> selectPostListByUserId(int userId);
+	public List<Post> selectPostListByUserId(
+			@Param("userId") int userId,
+			@Param("standardId") Integer standardId, 
+			@Param("direction") String direction, 
+			@Param("limit") int limit);
+	
+	public int selectPostIdByUserIdAndSort(
+			@Param("userId") int userId,
+			@Param("sort") String sort);
 	
 	public Post selectPostByPostIdAndUserId(
 			@Param("postId") int postId,
 			@Param("userId") int userId);
 	
 	public Post selectPostByPostId(int postId);
+	
+	public void deleteByPostId(int postId);
 }

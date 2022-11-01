@@ -1,5 +1,6 @@
 package com.memo.post.bo;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -17,6 +18,9 @@ public class PostBO {
 	
 	// private Logger log = LoggerFactory.getLogger(PostBO.class);
 	private Logger log = LoggerFactory.getLogger(this.getClass());
+	
+	// static final이 붙어있으면 상수
+	private static final int POST_MAX_SIZE = 3;
 	
 	@Autowired
 	private PostDAO postDAO;
@@ -64,8 +68,42 @@ public class PostBO {
 		return postDAO.updatePost(postId, userId, subject, content, imagePath);
 	}
 	
-	public List<Post> getPostListByUserId(int userId) {
-		return postDAO.selectPostListByUserId(userId);
+	public List<Post> getPostListByUserId(int userId, Integer prevId, Integer nextId) {
+		// 게시글 번호:   10 9 8 | 7 6 5 | 4 3 2 | 1
+		//   만약 4 3 2 페이지에 있을 때
+		//   1) 이전 : 정방향 4보다 큰 3개(5 6 7) => 코드에서 reverse(7 6 5)   
+		//   2) 다음 : 2보다 작은 3개
+		
+		Integer standardId = null; // 기준이 되는 id(이전 또는 다음)
+		String direction = null; // 방향
+		if (prevId != null) {
+			// 이전 클릭
+			standardId = prevId;
+			direction = "prev";
+			
+			List<Post> postList = postDAO.selectPostListByUserId(userId, standardId, direction, POST_MAX_SIZE);
+			Collections.reverse(postList);
+			return postList;
+		} else if (nextId != null) {
+			// 다음 클릭
+			standardId = nextId;
+			direction = "next";
+		}
+		
+		// 첫페이지일 때는 standardId가 null, 다음일 때는 값이 있음
+		return postDAO.selectPostListByUserId(userId, standardId, direction, POST_MAX_SIZE);
+	}
+	
+	// 모든 글이 아닌 내(userId)가 쓴 글만 가져오기 위해 userId도 가져온다.
+	public boolean isLastPage(int nextId, int userId) {  // next 방향의 끝인가?
+		// nextId와 제일 작은 id가 같은가?
+		int postId = postDAO.selectPostIdByUserIdAndSort(userId, "ASC");
+		return postId == nextId; // 같으면 마지막 페이지
+	}
+	
+	public boolean isFirstPage(int prevId, int userId) { // prev 방향의 끝인가?
+		int postId = postDAO.selectPostIdByUserIdAndSort(userId, "DESC");
+		return postId == prevId; // 같으면 앞 페이지
 	}
 	
 	public Post getPostByPostIdAndUserId(int postId, int userId) {
@@ -75,5 +113,19 @@ public class PostBO {
 	
 	public Post getPostByPostId(int postId) {
 		return postDAO.selectPostByPostId(postId);
+	}
+	
+	public void deletePostByPostId(int postId) {
+		// 기존글 가져오기
+		Post post = getPostByPostId(postId);
+		if(post == null) {
+			log.warn("[delete post] 삭제할 게시글이 없습니다. postId:{}", postId);
+			return;
+		}
+		// 업로드 되었던 이미지패스가 존재하면 이미지 삭제
+		if (post.getImagePath() != null) {
+			fileManagerService.deleteFile(post.getImagePath());
+		}
+		postDAO.deleteByPostId(postId);
 	}
 }
